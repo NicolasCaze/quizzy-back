@@ -15,4 +15,10 @@ describe('PingService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('getPing', () => {
+    it('should return "Ok"', () => {
+      expect(service.getPing()).toBe('Ok');
+    });
+  });
 });
