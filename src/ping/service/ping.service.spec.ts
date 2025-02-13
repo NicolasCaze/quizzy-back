@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PingService } from './ping.service';
+import { PingService } from '../service/ping.service';
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 
 describe('PingService', () => {
