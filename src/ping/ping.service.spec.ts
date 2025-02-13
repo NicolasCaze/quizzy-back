@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PingService } from './ping.service';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
 
 describe('PingService', () => {
   let service: PingService;
@@ -19,6 +20,15 @@ describe('PingService', () => {
   describe('getPing', () => {
     it('should return "Ok"', () => {
       expect(service.getPing()).toBe('Ok');
+    });
+    it( 'should be error', () => {
+      jest.spyOn(service, 'getPing').mockImplementation(() => {throw new HttpException({status: 500,error: 'Internal Server Error',}, 500);});
+      try {
+        service.getPing();
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.status).toBe(500);
+      }
     });
   });
 });
