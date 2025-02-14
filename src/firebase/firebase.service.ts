@@ -1,52 +1,33 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { initializeApp } from 'firebase/app';
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDoc,
-  doc,
-} from 'firebase/firestore';
+import { Inject, Injectable} from '@nestjs/common';
+import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
 
 @Injectable()
-export class FirebaseService implements OnModuleInit {
-  private app;
-  private db;
+export class FirebaseService {
+  constructor(@Inject( FirebaseConstants.FIREBASE_TOKEN) private readonly fa: FirebaseAdmin) {}
 
-  onModuleInit() {
-    this.app = initializeApp({
-      apiKey: 'AIzaSyCMH0ikwHKgS9wxQF2H7P82vGg11R2vSsA',
-      authDomain: 'quizzy-ekip4.firebaseapp.com',
-      projectId: 'quizzy-ekip4',
-      storageBucket: 'quizzy-ekip4.firebasestorage.app',
-      messagingSenderId: '986228852993',
-      appId: '1:986228852993:web:de548460c79864ff85f300',
-    });
-
-    this.db = getFirestore(this.app);
-  }
-
-  async addUser(data: { name: string; email: string; password: string }) {
+  async addUser(uid: string, username: string) {
     try {
-      const docRef = await addDoc(collection(this.db, 'users'), data);
-      return { id: docRef.id, ...data };
+      const userDocRef = this.fa.firestore.collection('users').doc(uid);
+      await userDocRef.set({ username }, { merge: true });
+
+      return { message: 'User created successfully' };
     } catch (error) {
-      throw new Error(`Erreur lors de l'ajout : ${error.message}`);
+      throw new Error(`Erreur lors de l'ajout de l'utilisateur : ${error.message}`);
     }
   }
 
-  async getUser(userId: string) {
+  async getUser(uid: string) {
     try {
-      const docRef = doc(this.db, 'users', userId);
-      const docSnap = await getDoc(docRef);
+      const userDocRef = this.fa.firestore.collection('users').doc(uid);
+      const docSnap = await userDocRef.get();
 
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
-      } else {
+      if (!docSnap.exists) {
         throw new Error('Utilisateur non trouvé');
       }
+
+      return { uid, ...docSnap.data() };
     } catch (error) {
-      throw new Error(`Erreur lors de la récupération : ${error.message}`);
+      throw new Error(`Erreur lors de la récupération de l'utilisateur : ${error.message}`);
     }
   }
 }
