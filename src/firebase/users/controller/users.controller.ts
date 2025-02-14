@@ -3,7 +3,7 @@ import { FirebaseService } from '../../firebase.service';
 import { Auth } from '../../../auth/middleware/auth.decorator';
 import { RequestWithUser } from '../../../auth/model';
 
-@Controller('api/users')
+@Controller('users')
 export class UsersController {
   constructor(private readonly firebaseService: FirebaseService) {}
 
