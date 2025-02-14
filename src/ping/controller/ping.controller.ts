@@ -1,12 +1,12 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
-import { PingService } from 'src/ping/ping.service';
+import { PingService } from '../service/ping.service';
 
 @Controller('ping')
 export class PingController {
     constructor(private readonly pingService : PingService ) {}
     
     @Get()
-    getPing(): HttpStatus {
+    getPing(): String {
       return this.pingService.getPing();
     }
 }

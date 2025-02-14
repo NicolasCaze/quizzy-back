@@ -1,12 +1,12 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PingController } from './ping/ping.controller';
-import { PingService } from './ping/ping.service';
-import { UsersController } from './firebase/users.controller';
+import { PingController } from './ping/controller/ping.controller';
+import { PingService } from './ping/service/ping.service';
+import { UsersController } from './firebase/users/controller/users.controller';
 import { FirebaseService } from './firebase/firebase.service';
-import { QuizzController } from './quizz/quizz.controller';
-import { QuizzService } from './quizz/quizz.service';
+import { QuizzController } from './quizz/controller/quizz.controller';
+import { QuizzService } from './quizz/service/quizz.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
 import * as admin from 'firebase-admin'
