@@ -9,29 +9,27 @@ import { QuizzController } from './quizz/controller/quizz.controller';
 import { QuizzService } from './quizz/service/quizz.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
-import * as admin from 'firebase-admin'
 import * as dotenv from 'dotenv';
-
+import { QuizzRepository } from './quizz/repository/quizz.repository';
+import { FirebaseModule } from 'nestjs-firebase';
 
 dotenv.config();
+console.log()
+
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule,
+    FirebaseModule.forRoot({
+      googleApplicationCredential:
+        './src/assets/quizzy-firebase-key.json',
+    }),
+  ],
   controllers: [AppController, PingController, UsersController, QuizzController],
-  providers: [AppService, PingService, FirebaseService, QuizzService],
+  providers: [AppService, PingService, FirebaseService, QuizzService, QuizzRepository],
 })
 export class AppModule {
   public configure(consumer: MiddlewareConsumer) {
       consumer
         .apply(AuthMiddleware)
         .forRoutes({ path: "*", method: RequestMethod.ALL });
-  
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-          client_email: process.env.FIREBASE_CLIENT_EMAIL,
-          project_id: process.env.FIREBASE_PROJECT_ID,
-        } as Partial<admin.ServiceAccount>),
-        databaseURL: process.env.FIREBASE_DATABASE_URL,
-      });
     }
 }
