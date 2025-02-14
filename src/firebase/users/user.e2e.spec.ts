@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { FakeAuthMiddleware } from '../../auth/middleware/fake-auth.middleware.service';
-import { FirebaseService } from '../firebase.service';
 
 describe('UserControllers (e2e)', () => {
   let app: INestApplication;
@@ -22,11 +21,11 @@ describe('UserControllers (e2e)', () => {
   });
 
   it('POST /users ()', () => {
-    const userId = Math.floor(Math.random() * 1000000000);
-    FakeAuthMiddleware.SetUser('test-uid'+userId);
+    //const userId = Math.floor(Math.random() * 1000000000);
+    FakeAuthMiddleware.SetUser('test-uid');
     return request(app.getHttpServer())
-      .post('/api/users')
-      .send({username: 'test'})
+      .post('/users')
+      .send({username: 'tesre'})
       .expect(201);
   });
 

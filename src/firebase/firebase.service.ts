@@ -1,5 +1,4 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import { Inject, Injectable} from '@nestjs/common';
 import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
 
 @Injectable()

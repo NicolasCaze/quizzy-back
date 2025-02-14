@@ -14,7 +14,6 @@ import { QuizzRepository } from './quizz/repository/quizz.repository';
 import { FirebaseModule } from 'nestjs-firebase';
 
 dotenv.config();
-console.log()
 
 @Module({
   imports: [AuthModule,
