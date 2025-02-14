@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Param, Req } from '@nestjs/common';
 import { QuizzService } from '../service/quizz.service';
-import { Auth } from 'src/auth/middleware/auth.decorator';
-import { RequestWithUser } from 'src/auth/model';
+import { RequestWithUser } from '../../auth/model';
+import { Auth } from '../../auth/middleware/auth.decorator';
 
 @Controller('quiz')
 export class QuizzController {

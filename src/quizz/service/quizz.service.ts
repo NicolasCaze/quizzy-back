@@ -1,12 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDoc,
-  doc,
-  updateDoc
-} from 'firebase/firestore';
 import { FirebaseService } from '../../firebase/firebase.service';
 import { QuizzRepository } from '../repository/quizz.repository';
 
