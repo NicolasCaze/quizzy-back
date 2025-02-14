@@ -7,6 +7,7 @@ import {
   getDoc,
   doc,
 } from 'firebase/firestore';
+import { firebaseConfig } from '../config/firebase_const';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
@@ -14,14 +15,7 @@ export class FirebaseService implements OnModuleInit {
   private db;
 
   onModuleInit() {
-    this.app = initializeApp({
-      apiKey: 'AIzaSyCMH0ikwHKgS9wxQF2H7P82vGg11R2vSsA',
-      authDomain: 'quizzy-ekip4.firebaseapp.com',
-      projectId: 'quizzy-ekip4',
-      storageBucket: 'quizzy-ekip4.firebasestorage.app',
-      messagingSenderId: '986228852993',
-      appId: '1:986228852993:web:de548460c79864ff85f300',
-    });
+    this.app = initializeApp(firebaseConfig);
 
     this.db = getFirestore(this.app);
   }

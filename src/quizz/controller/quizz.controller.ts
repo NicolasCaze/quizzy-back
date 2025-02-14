@@ -1,32 +1,23 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
-import { QuizzService } from './quizz.service';
+import { Controller, Post, Body, Param, Req } from '@nestjs/common';
+import { QuizzService } from '../service/quizz.service';
+import { Auth } from 'src/auth/middleware/auth.decorator';
+import { RequestWithUser } from 'src/auth/model';
 
 @Controller('quiz')
 export class QuizzController {
   constructor(private readonly quizService: QuizzService) {}
 
   @Post('create')
-  async createQuiz(@Body('title') title: string, @Body('userId') userId: string) {
-    return this.quizService.createQuiz(title, userId);
+  @Auth()
+  async createQuiz(@Req() request: RequestWithUser, @Body('title') title: string, @Body('description') description: string) {
+    const uid = request.user.uid;
+    return this.quizService.createQuiz(title, description, uid);
   }
 
-  @Post(':quizId/add-question')
-  async addQuestion(
-    @Param('quizId') quizId: string,
-    @Body('questionText') questionText: string,
-    @Body('options') options: string[],
-    @Body('correctOption') correctOption: number,
-  ) {
-    return this.quizService.addQuestion(quizId, questionText, options, correctOption);
-  }
-
-  @Post(':quizId/launch')
-  async launchQuiz(@Param('quizId') quizId: string) {
-    return this.quizService.launchQuiz(quizId);
-  }
-
-  @Post(':quizId/join')
-  async joinQuiz(@Param('quizId') quizId: string, @Body('userId') userId: string) {
-    return this.quizService.joinQuiz(quizId, userId);
+  @Post('get')
+  @Auth()
+  async getQuizzes(@Req() request: RequestWithUser) {
+    const uid = request.user.uid;
+    return this.quizService.getQuizzes(uid);
   }
 }
