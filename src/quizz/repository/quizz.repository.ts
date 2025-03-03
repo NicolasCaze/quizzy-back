@@ -25,10 +25,37 @@ export class QuizzRepository {
   }
 
   async getQuizzes(userId: string) {
-    const quizRef = this.db.collection('quizzes').where('uid', '==', userId);
-    const query = await quizRef.get();
-    const quizzes = query.docs.map((doc) => ({ id: doc.id, title: doc.data().title }));
+    const quizRef = this.db.collection('quiz').where('userId', '==', userId);
+    const query = await quizRef.get(); 
+    if (query.empty) {
+      console.log("No quizzes found for user:", userId);
+      return { data: [] }; // Aucun quiz trouvé
+    }
+    const quizzes = query.docs.map((doc) => ({
+      id: doc.id,
+      title: doc.data().title,
+    }));
+  
     return { data: quizzes };
+  }
+  
+  
+  async getQuizById(quizId: string, userId: string): Promise<any> {
+  const quizRef = this.db.collection('quiz').doc(quizId);
+  const quizSnap = await quizRef.get();
+
+  if (!quizSnap.exists) {
+    return null; // Quiz n'existe pas
+  }
+  const quizData = quizSnap.data();
+  if (quizData.userId !== userId) {
+    return null; // L'utilisateur n'est pas propriétaire
+  }
+  return {
+    title: quizData.title,
+    description: quizData.description,
+    questions: quizData.questions || [], // Par défaut, un tableau vide si aucune question
+  };
   }
 
 }

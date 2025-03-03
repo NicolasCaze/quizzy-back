@@ -19,4 +19,9 @@ export class QuizzService {
   async getQuizzes(userId: string) {
     return this.quizzRepository.getQuizzes(userId);
   }
+
+  async getQuizById(quizId: string, userId: string): Promise<any> {
+    const quiz = await this.quizzRepository.getQuizById(quizId, userId);
+    return quiz;
+  }
 }
