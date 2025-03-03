@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PingService {
-    getPing() : String {
+    getPing() : string {
       try {
         return 'Ok';
       } catch (error) {
