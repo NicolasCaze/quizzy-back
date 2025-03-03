@@ -6,7 +6,7 @@ export class PingController {
     constructor(private readonly pingService : PingService ) {}
     
     @Get()
-    getPing(): String {
+    getPing(): {status:String} {
       return this.pingService.getPing();
     }
 }
