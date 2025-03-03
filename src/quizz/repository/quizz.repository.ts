@@ -1,28 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { FirebaseService } from '../../firebase/firebase.service';
-import { Firestore } from '@google-cloud/firestore';
+import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
+
 
 @Injectable()
 export class QuizzRepository {
   private db;
 
-  constructor(private firebaseService: FirebaseService) {
-    this.db = this.firebaseService['db'];
+  constructor(@Inject( FirebaseConstants.FIREBASE_TOKEN) private readonly fa: FirebaseAdmin) {
+    this.db = this.fa.firestore;
   }
 
   async createQuiz(data: { title: string; description: string; uid: string }) {
-    /*const quizRef = await addDoc(collection(this.db, 'quizzes'), {
-      ...data,
-      createdAt: new Date(),
-      isActive: false,
-    });
-    return { id: quizRef.id, ...data };*/
+    // const quizRef = await this.fa.firestore.addDoc(this.fa.firestore.collection('quizzes'), {
+    //   ...data,
+    //   createdAt: new Date(),
+    //   isActive: false,
+    // });
+    // return { id: quizRef.id, ...data };
   }
 
   async getQuizzes(userId: string) {
-    const quizRef = this.db.collection(this.db, 'quizzes');
-    const query = await this.db.getDoc(this.db.doc(quizRef, userId));
-    return query.data();
+    const quizRef = this.db.collection('quizzes').where('uid', '==', userId);
+    const query = await quizRef.get();
+    const quizzes = query.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return quizzes;
   }
 
 }
