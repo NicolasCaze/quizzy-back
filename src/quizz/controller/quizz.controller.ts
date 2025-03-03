@@ -14,7 +14,7 @@ export class QuizzController {
     return this.quizService.createQuiz(title, description, uid);
   }
 
-  @Get('quizz')
+  @Get()
   @Auth()
   async getQuizzes(@Req() request: RequestWithUser) {
     const uid = request.user.uid;
