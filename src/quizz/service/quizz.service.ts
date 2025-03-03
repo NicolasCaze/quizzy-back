@@ -11,8 +11,8 @@ export class QuizzService {
   }
 
   // Création d'un questionnaire
-  async createQuiz(title: string, description: string, uid : string) {
-    return this.quizzRepository.createQuiz({ title, description, uid });
+  async createQuiz(title: string, description: string, userId: string) {
+   return this.quizzRepository.createQuiz(title, description, userId);
   }
 
   //Récuperer des questionnaires liés à un utilisateur

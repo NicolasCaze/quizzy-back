@@ -11,20 +11,24 @@ export class QuizzRepository {
     this.db = this.fa.firestore;
   }
 
-  async createQuiz(data: { title: string; description: string; uid: string }) {
-    // const quizRef = await this.fa.firestore.addDoc(this.fa.firestore.collection('quizzes'), {
-    //   ...data,
-    //   createdAt: new Date(),
-    //   isActive: false,
-    // });
-    // return { id: quizRef.id, ...data };
+  async createQuiz(title: string, description: string, userId: string) {
+    try {
+      const quizDocRef = this.fa.firestore.collection('quiz').doc();
+      const uid = quizDocRef.id;
+      await quizDocRef.set({ title, description, userId }, { merge: true });
+      console.log("Created");
+  
+      return { id: uid, message: 'Quiz created successfully' };
+    } catch (error) {
+      throw new Error(`Erreur lors de la création du quiz : ${error.message}`);
+    }
   }
 
   async getQuizzes(userId: string) {
     const quizRef = this.db.collection('quizzes').where('uid', '==', userId);
     const query = await quizRef.get();
-    const quizzes = query.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return quizzes;
+    const quizzes = query.docs.map((doc) => ({ id: doc.id, title: doc.data().title }));
+    return { data: quizzes };
   }
 
 }
