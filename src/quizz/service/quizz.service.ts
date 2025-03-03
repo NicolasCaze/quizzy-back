@@ -12,11 +12,16 @@ export class QuizzService {
 
   // Création d'un questionnaire
   async createQuiz(title: string, description: string, userId: string) {
-   return this.quizzRepository.createQuiz(title, description, userId);
+    return this.quizzRepository.createQuiz(title, description, userId);
   }
+
 
   //Récuperer des questionnaires liés à un utilisateur
   async getQuizzes(userId: string) {
     return this.quizzRepository.getQuizzes(userId);
+  }
+
+  async getQuizById(id: string) {
+    return this.quizzRepository.getQuizById(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, Get, HttpCode, Request, Res } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param } from '@nestjs/common';
 import { QuizzService } from '../service/quizz.service';
 import { RequestWithUser } from '../../auth/model';
 import { Auth } from '../../auth/middleware/auth.decorator';
@@ -28,5 +28,10 @@ export class QuizzController {
   async getQuizzes(@Req() request: RequestWithUser) {
     const uid = request.user.uid;
     return this.quizService.getQuizzes(uid);
+  }
+  @Get(':id')
+  @Auth()
+  async getQuizById(@Param('id') id: string) {
+    return this.quizService.getQuizById(id);
   }
 }

@@ -24,11 +24,23 @@ export class QuizzRepository {
     }
   }
 
+
   async getQuizzes(userId: string) {
     const quizRef = this.db.collection('quizzes').where('uid', '==', userId);
     const query = await quizRef.get();
     const quizzes = query.docs.map((doc) => ({ id: doc.id, title: doc.data().title }));
     return { data: quizzes };
+  }
+
+  async getQuizById(id: string) {
+    const quizDocRef = this.db.collection('quiz').doc(id);
+    const docSnap = await quizDocRef.get();
+
+    if (!docSnap.exists) {
+      throw new Error('Quiz not found');
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
   }
 
 }
