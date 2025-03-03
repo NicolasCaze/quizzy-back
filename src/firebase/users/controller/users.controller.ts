@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Request, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, Request, UseGuards, HttpCode, Param, Get, Req } from '@nestjs/common';
 import { FirebaseService } from '../../firebase.service';
 import { Auth } from '../../../auth/middleware/auth.decorator';
 import { RequestWithUser } from '../../../auth/model';
@@ -14,4 +14,12 @@ export class UsersController {
     const uid = req.user.uid;
     return this.firebaseService.addUser(uid, body.username);
   }
+
+  @Get('me')
+  @Auth()
+  async getUser(@Req() req: RequestWithUser) {
+    const uid = req.user.uid; 
+    return this.firebaseService.getUser(uid);
+  }
 }
+
