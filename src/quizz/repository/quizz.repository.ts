@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseService } from '../../firebase/firebase.service';
+import { Firestore } from '@google-cloud/firestore';
 
 @Injectable()
 export class QuizzRepository {
@@ -19,9 +20,9 @@ export class QuizzRepository {
   }
 
   async getQuizzes(userId: string) {
-    /*const quizRef = collection(this.db, 'quizzes');
-    const query = await getDoc(doc(quizRef, userId));
-    return query.data();*/
+    const quizRef = this.db.collection(this.db, 'quizzes');
+    const query = await this.db.getDoc(this.db.doc(quizRef, userId));
+    return query.data();
   }
 
 }
