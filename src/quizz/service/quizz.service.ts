@@ -28,7 +28,7 @@ export class QuizzService {
 
   async updateQuizTitle(id: string, newTitle: string, userId: string) {
     // Récupérer le quiz
-    const quiz = await this.quizzRepository.getQuizById(id);
+    const quiz = await this.quizzRepository.getQuizByIdForTitle(id);
   
     // Vérifier si le quiz existe et appartient bien à l'utilisateur
     if (!quiz) {
@@ -44,7 +44,7 @@ export class QuizzService {
   
   async addQuestionToQuiz(quizId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean }[] }, userId: string) {
     // Vérifier si le quiz existe et appartient bien à l'utilisateur
-    const quiz = await this.quizzRepository.getQuizById(quizId);
+    const quiz = await this.quizzRepository.getQuizById(quizId, userId);
   
     if (!quiz) {
       throw new NotFoundException("Quiz not found");

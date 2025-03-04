@@ -40,6 +40,16 @@ export class QuizzRepository {
     return { data: quizzes };
   }
   
+  async getQuizByIdForTitle(id: string) {
+    const quizDocRef = this.db.collection('quiz').doc(id);
+    const docSnap = await quizDocRef.get();
+
+    if (!docSnap.exists) {
+      throw new Error('Quiz not found');
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
+  }
   
   async getQuizById(quizId: string, userId: string): Promise<any> {
   const quizRef = this.db.collection('quiz').doc(quizId);
@@ -57,17 +67,6 @@ export class QuizzRepository {
     description: quizData.description,
     questions: quizData.questions || [], // Par défaut, un tableau vide si aucune question
   };
-  }
-
-  async getQuizById(id: string) {
-    const quizDocRef = this.db.collection('quiz').doc(id);
-    const docSnap = await quizDocRef.get();
-
-    if (!docSnap.exists) {
-      throw new Error('Quiz not found');
-    }
-
-    return { id: docSnap.id, ...docSnap.data() };
   }
 
   async updateQuizTitle(id: string, newTitle: string) {
