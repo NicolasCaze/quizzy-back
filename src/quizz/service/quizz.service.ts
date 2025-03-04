@@ -18,11 +18,17 @@ export class QuizzService {
 
 
   //Récuperer des questionnaires liés à un utilisateur
-  async getQuizzes(userId: string) {
-    return this.quizzRepository.getQuizzes(userId);
-  }
 
-  //Récuperer un questionnaire par son id
+  async getQuizzes(userId: string, baseUrl: string) {
+    const quizzes = await this.quizzRepository.getQuizzes(userId);
+    return {
+        ...quizzes,
+        _links: {
+            create: `${baseUrl}/api/quiz`
+        }
+    };
+}
+
   async getQuizById(quizId: string, userId: string): Promise<any> {
     const quiz = await this.quizzRepository.getQuizById(quizId, userId);
     if (!quiz) {
