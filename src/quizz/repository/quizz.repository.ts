@@ -1,7 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { FirebaseService } from '../../firebase/firebase.service';
 import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
-import * as crypto from 'crypto';
 
 
 @Injectable()
@@ -111,7 +109,6 @@ export class QuizzRepository {
   }
 
   async startQuizExecution(quizId: string, userId: string): Promise<string | null> {
-
     const quizSnap =  await this.getQuizById(quizId, userId);
     console.log("quizSnap", quizSnap);
 
@@ -119,9 +116,7 @@ export class QuizzRepository {
        throw new Error("Quiz is not ready to be started");
      }
 
-    // Générer un ID unique pour l'exécution via crypto
-    const executionId = crypto.randomBytes(3).toString('hex');
-    console.log("executionId", executionId);
+    const executionId = this.generateExecutionId();
 
     // Création de l'exécution du quiz
     const executionRef = this.db.collection('executions').doc(executionId);
@@ -135,5 +130,8 @@ export class QuizzRepository {
   }
 
   
-
+  private generateExecutionId(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return Array.from({ length: 6 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  }
 }
