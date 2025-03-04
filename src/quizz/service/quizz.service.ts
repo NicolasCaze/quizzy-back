@@ -22,13 +22,17 @@ export class QuizzService {
   }
   async getQuizById(quizId: string, userId: string): Promise<any> {
     const quiz = await this.quizzRepository.getQuizById(quizId, userId);
-    return quiz;
+    return  {
+      title: quiz.title,
+      description: quiz.description,
+      questions: quiz.questions || [], // Par défaut, un tableau vide si aucune question
+    };
   }
 
 
-  async updateQuizTitle(id: string, newTitle: string, userId: string) {
+  async updateQuizTitle(quizId: string, newTitle: string, userId: string) {
     // Récupérer le quiz
-    const quiz = await this.quizzRepository.getQuizByIdForTitle(id);
+    const quiz = await this.quizzRepository.getQuizById(quizId, userId);
   
     // Vérifier si le quiz existe et appartient bien à l'utilisateur
     if (!quiz) {
@@ -39,7 +43,7 @@ export class QuizzService {
     }
   
     // Mettre à jour le titre du quiz
-    await this.quizzRepository.updateQuizTitle(id, newTitle);
+    await this.quizzRepository.updateQuizTitle(quizId, newTitle);
   }
   
   async addQuestionToQuiz(quizId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean }[] }, userId: string) {

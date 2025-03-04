@@ -40,16 +40,16 @@ export class QuizzRepository {
     return { data: quizzes };
   }
   
-  async getQuizByIdForTitle(id: string) {
-    const quizDocRef = this.db.collection('quiz').doc(id);
-    const docSnap = await quizDocRef.get();
+  // async getQuizByIdForTitle(id: string) {
+  //   const quizDocRef = this.db.collection('quiz').doc(id);
+  //   const docSnap = await quizDocRef.get();
 
-    if (!docSnap.exists) {
-      throw new Error('Quiz not found');
-    }
+  //   if (!docSnap.exists) {
+  //     throw new Error('Quiz not found');
+  //   }
 
-    return { id: docSnap.id, ...docSnap.data() };
-  }
+  //   return { id: docSnap.id, ...docSnap.data() };
+  // }
   
   async getQuizById(quizId: string, userId: string): Promise<any> {
   const quizRef = this.db.collection('quiz').doc(quizId);
@@ -62,11 +62,7 @@ export class QuizzRepository {
   if (quizData.userId !== userId) {
     return null; // L'utilisateur n'est pas propriétaire
   }
-  return {
-    title: quizData.title,
-    description: quizData.description,
-    questions: quizData.questions || [], // Par défaut, un tableau vide si aucune question
-  };
+  return { id: quizSnap.id, ...quizSnap.data() };
   }
 
   async updateQuizTitle(id: string, newTitle: string) {
@@ -74,6 +70,7 @@ export class QuizzRepository {
     
     await quizDocRef.update({ title: newTitle });
   }
+  
   async addQuestionToQuiz(quizId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean }[] }) {
     const quizDocRef = this.db.collection('quiz').doc(quizId);
     const questionDocRef = quizDocRef.collection('questions').doc(); // Crée un nouvel ID pour la question
