@@ -126,6 +126,7 @@ private async isQuizStartable(quizId: string, userId: string): Promise<boolean> 
     return this.quizzRepository.addQuestionToQuiz(quizId, questionData);
   }
 
+
   async updateQuestion(quizId: string, questionId: string, userId: string, body: { title: string; answers: any[]; }) {
     const success = await this.quizzRepository.updateQuestion(quizId, questionId, userId, body);
 
@@ -133,5 +134,17 @@ private async isQuizStartable(quizId: string, userId: string): Promise<boolean> 
     throw new NotFoundException("quiz does not exist or does not belong to user");
   }
   return success;
+  }
+
+
+  async startQuizExecution(quizId: string, userId: string): Promise<string> {
+    console.log("Starting quiz execution for quiz", quizId, "and user", userId);
+    const executionId = await this.quizzRepository.startQuizExecution(quizId, userId);
+
+    if (!executionId) {
+      throw new NotFoundException("Quiz not found or you don't have permission");
+    }
+  
+    return executionId;
   }
 }
