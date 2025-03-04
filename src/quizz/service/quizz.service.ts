@@ -4,6 +4,7 @@ import { QuizzRepository } from '../repository/quizz.repository';
 
 @Injectable()
 export class QuizzService {
+
   private db;
 
   constructor(private firebaseService: FirebaseService, private quizzRepository: QuizzRepository) {
@@ -66,5 +67,14 @@ export class QuizzService {
     }
   
     return this.quizzRepository.addQuestionToQuiz(quizId, questionData);
+  }
+
+  async updateQuestion(quizId: string, questionId: string, userId: string, body: { title: string; answers: any[]; }) {
+    const success = await this.quizzRepository.updateQuestion(quizId, questionId, userId, body);
+
+  if (!success) {
+    throw new NotFoundException("quiz does not exist or does not belong to user");
+  }
+  return success;
   }
 }

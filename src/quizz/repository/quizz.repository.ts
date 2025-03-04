@@ -78,6 +78,36 @@ export class QuizzRepository {
     
     return questionDocRef.id;
   }
+
+  async updateQuestion(quizId: string, questionId: string, userId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean; }[]; }) {
+    const quizRef = this.db.collection('quiz').doc(quizId);
+  const quizSnap = await quizRef.get();
+
+  if (!quizSnap.exists) {
+    return false; // Quiz n'existe pas
+  }
+
+  const quizData = quizSnap.data();
+  if (quizData.userId !== userId) {
+    return false; // L'utilisateur n'est pas propriétaire
+  }
+
+  // Référence à la question dans la sous-collection
+  const questionRef = quizRef.collection('questions').doc(questionId);
+  const questionSnap = await questionRef.get();
+
+  if (!questionSnap.exists) {
+    return false; // Question n'existe pas
+  }
+
+  // Mise à jour de la question
+  await questionRef.update({
+    title: questionData.title,
+    answers: questionData.answers
+  });
+
+  return true;
+}
   
 
 }

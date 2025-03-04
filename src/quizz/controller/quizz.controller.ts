@@ -1,5 +1,5 @@
 
-import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException, Put } from '@nestjs/common';
 
 import { QuizzService } from '../service/quizz.service';
 import { RequestWithUser } from '../../auth/model';
@@ -80,5 +80,23 @@ export class QuizzController {
     const location = `${request.protocol}://${request.get('host')}/api/quiz/${id}/questions/${questionId}`;
     res.setHeader('Location', location);
     res.status(201).send();
+  }
+
+
+  @Put(':id/questions/:questionId')
+  @Auth() // Vérification de l'authentification
+  @HttpCode(204)
+  async updateQuestion(
+    @Param('id') quizId: string,
+    @Param('questionId') questionId: string,
+    @Req() req: RequestWithUser,
+    @Body() body: { title: string; answers: any[] },
+    @Res() res: Response
+  ) {
+    const userId = req.user.uid;
+
+    await this.quizService.updateQuestion(quizId, questionId, userId, body);
+
+    res.status(204).send();
   }
 }
