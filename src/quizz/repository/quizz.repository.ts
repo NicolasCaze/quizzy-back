@@ -43,4 +43,19 @@ export class QuizzRepository {
     return { id: docSnap.id, ...docSnap.data() };
   }
 
+  async updateQuizTitle(id: string, newTitle: string) {
+    const quizDocRef = this.db.collection('quiz').doc(id);
+    
+    await quizDocRef.update({ title: newTitle });
+  }
+  async addQuestionToQuiz(quizId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean }[] }) {
+    const quizDocRef = this.db.collection('quiz').doc(quizId);
+    const questionDocRef = quizDocRef.collection('questions').doc(); // Crée un nouvel ID pour la question
+  
+    await questionDocRef.set(questionData);
+    
+    return questionDocRef.id;
+  }
+  
+
 }
