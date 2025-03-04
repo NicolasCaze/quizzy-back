@@ -1,5 +1,5 @@
 
-import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException, Put } from '@nestjs/common';
 
 import { QuizzService } from '../service/quizz.service';
 import { RequestWithUser } from '../../auth/model';
@@ -68,19 +68,37 @@ export class QuizzController {
   }
 
   @Post(':id/questions')
-@Auth()
-@HttpCode(201)
-async addQuestionToQuiz(
-  @Param('id') id: string,
-  @Body() body: { title: string; answers: { title: string; isCorrect: boolean }[] },
-  @Req() request: RequestWithUser,
-  @Res() res: Response
-) {
-  const userId = request.user.uid;
-  const questionId = await this.quizService.addQuestionToQuiz(id, body, userId);
+  @Auth()
+  @HttpCode(201)
+  async addQuestionToQuiz(
+    @Param('id') id: string,
+    @Body() body: { title: string; answers: { title: string; isCorrect: boolean }[] },
+    @Req() request: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const userId = request.user.uid;
+    const questionId = await this.quizService.addQuestionToQuiz(id, body, userId);
   
-  const location = `${request.protocol}://${request.get('host')}/api/quiz/${id}/questions/${questionId}`;
-  res.setHeader('Location', location);
-  res.status(201).send();
-}
+    const location = `${request.protocol}://${request.get('host')}/api/quiz/${id}/questions/${questionId}`;
+    res.setHeader('Location', location);
+    res.status(201).send();
+  }
+
+
+  @Put(':id/questions/:questionId')
+  @Auth() // Vérification de l'authentification
+  @HttpCode(204)
+  async updateQuestion(
+    @Param('id') quizId: string,
+    @Param('questionId') questionId: string,
+    @Req() req: RequestWithUser,
+    @Body() body: { title: string; answers: any[] },
+    @Res() res: Response
+  ) {
+    const userId = req.user.uid;
+
+    await this.quizService.updateQuestion(quizId, questionId, userId, body);
+
+    res.status(204).send();
+  }
 }
