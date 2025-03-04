@@ -24,6 +24,7 @@ export class QuizzRepository {
     }
   }
 
+
   async getQuizzes(userId: string) {
     const quizRef = this.db.collection('quiz').where('userId', '==', userId);
     const query = await quizRef.get(); 
@@ -57,5 +58,31 @@ export class QuizzRepository {
     questions: quizData.questions || [], // Par défaut, un tableau vide si aucune question
   };
   }
+
+  async getQuizById(id: string) {
+    const quizDocRef = this.db.collection('quiz').doc(id);
+    const docSnap = await quizDocRef.get();
+
+    if (!docSnap.exists) {
+      throw new Error('Quiz not found');
+    }
+
+    return { id: docSnap.id, ...docSnap.data() };
+  }
+
+  async updateQuizTitle(id: string, newTitle: string) {
+    const quizDocRef = this.db.collection('quiz').doc(id);
+    
+    await quizDocRef.update({ title: newTitle });
+  }
+  async addQuestionToQuiz(quizId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean }[] }) {
+    const quizDocRef = this.db.collection('quiz').doc(quizId);
+    const questionDocRef = quizDocRef.collection('questions').doc(); // Crée un nouvel ID pour la question
+  
+    await questionDocRef.set(questionData);
+    
+    return questionDocRef.id;
+  }
+  
 
 }
