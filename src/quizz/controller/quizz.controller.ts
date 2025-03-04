@@ -66,19 +66,19 @@ export class QuizzController {
   }
 
   @Post(':id/questions')
-@Auth()
-@HttpCode(201)
-async addQuestionToQuiz(
-  @Param('id') id: string,
-  @Body() body: { title: string; answers: { title: string; isCorrect: boolean }[] },
-  @Req() request: RequestWithUser,
-  @Res() res: Response
-) {
-  const userId = request.user.uid;
-  const questionId = await this.quizService.addQuestionToQuiz(id, body, userId);
+  @Auth()
+  @HttpCode(201)
+  async addQuestionToQuiz(
+    @Param('id') id: string,
+    @Body() body: { title: string; answers: { title: string; isCorrect: boolean }[] },
+    @Req() request: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const userId = request.user.uid;
+    const questionId = await this.quizService.addQuestionToQuiz(id, body, userId);
   
-  const location = `${request.protocol}://${request.get('host')}/api/quiz/${id}/questions/${questionId}`;
-  res.setHeader('Location', location);
-  res.status(201).send();
-}
+    const location = `${request.protocol}://${request.get('host')}/api/quiz/${id}/questions/${questionId}`;
+    res.setHeader('Location', location);
+    res.status(201).send();
+  }
 }
