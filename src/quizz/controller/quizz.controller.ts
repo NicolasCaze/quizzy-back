@@ -29,9 +29,11 @@ export class QuizzController {
   @Get()
   @Auth()
   async getQuizzes(@Req() request: RequestWithUser) {
-    const uid = request.user.uid;
-    return this.quizService.getQuizzes(uid);
+      const uid = request.user.uid;
+      const baseUrl = `${request.protocol}://${request.get('host')}`;
+      return this.quizService.getQuizzes(uid, baseUrl);
   }
+  
 
 
   @Get(':id')
