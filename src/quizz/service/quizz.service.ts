@@ -20,9 +20,9 @@ export class QuizzService {
   async getQuizzes(userId: string) {
     return this.quizzRepository.getQuizzes(userId);
   }
-
-  async getQuizById(id: string) {
-    return this.quizzRepository.getQuizById(id);
+  async getQuizById(quizId: string, userId: string): Promise<any> {
+    const quiz = await this.quizzRepository.getQuizById(quizId, userId);
+    return quiz;
   }
 
 
@@ -55,5 +55,4 @@ export class QuizzService {
   
     return this.quizzRepository.addQuestionToQuiz(quizId, questionData);
   }
-  
 }

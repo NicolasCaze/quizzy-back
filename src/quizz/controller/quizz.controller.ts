@@ -1,4 +1,6 @@
+
 import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException } from '@nestjs/common';
+
 import { QuizzService } from '../service/quizz.service';
 import { RequestWithUser } from '../../auth/model';
 import { Auth } from '../../auth/middleware/auth.decorator';
@@ -18,7 +20,8 @@ export class QuizzController {
   ) {
     const userId = req.user.uid;
     const result = await this.quizService.createQuiz(body.title, body.description, userId);
-    const location = `${req.protocol}://${req.get('host')}/api/quiz/${result.id}`;
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const location = `${baseUrl}/api/quiz/${result.id}`;
     res.setHeader('Location', location);
     res.status(201).send();
   }
@@ -29,10 +32,17 @@ export class QuizzController {
     const uid = request.user.uid;
     return this.quizService.getQuizzes(uid);
   }
+
+
   @Get(':id')
   @Auth()
-  async getQuizById(@Param('id') id: string) {
-    return this.quizService.getQuizById(id);
+  async getQuizById(@Req() request: RequestWithUser, @Param('id') quizId: string): Promise<any> {
+    const uid = request.user.uid;
+    const quiz= await this.quizService.getQuizById(quizId, uid);
+    if (!quiz) {
+      throw new Error('Quiz not found or does not belong to the user');
+    }
+    return quiz;
   }
 
 
