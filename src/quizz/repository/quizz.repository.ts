@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { FirebaseService } from '../../firebase/firebase.service';
 import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
+import * as crypto from 'crypto';
 
 
 @Injectable()
@@ -81,33 +82,58 @@ export class QuizzRepository {
 
   async updateQuestion(quizId: string, questionId: string, userId: string, questionData: { title: string; answers: { title: string; isCorrect: boolean; }[]; }) {
     const quizRef = this.db.collection('quiz').doc(quizId);
-  const quizSnap = await quizRef.get();
+    const quizSnap = await quizRef.get();
 
-  if (!quizSnap.exists) {
-    return false; // Quiz n'existe pas
+    if (!quizSnap.exists) {
+      return false; // Quiz n'existe pas
+    }
+
+    const quizData = quizSnap.data();
+    if (quizData.userId !== userId) {
+      return false; // L'utilisateur n'est pas propriétaire
+    }
+
+    // Référence à la question dans la sous-collection
+    const questionRef = quizRef.collection('questions').doc(questionId);
+    const questionSnap = await questionRef.get();
+
+    if (!questionSnap.exists) {
+      return false; // Question n'existe pas
+    }
+
+    // Mise à jour de la question
+    await questionRef.update({
+      title: questionData.title,
+      answers: questionData.answers
+    });
+
+    return true;
   }
 
-  const quizData = quizSnap.data();
-  if (quizData.userId !== userId) {
-    return false; // L'utilisateur n'est pas propriétaire
+  async startQuizExecution(quizId: string, userId: string): Promise<string | null> {
+
+    const quizSnap =  await this.getQuizById(quizId, userId);
+    console.log("quizSnap", quizSnap);
+
+     if (!quizSnap.questions || quizSnap.questions.length === 0) {
+       throw new Error("Quiz is not ready to be started");
+     }
+
+    // Générer un ID unique pour l'exécution via crypto
+    const executionId = crypto.randomBytes(3).toString('hex');
+    console.log("executionId", executionId);
+
+    // Création de l'exécution du quiz
+    const executionRef = this.db.collection('executions').doc(executionId);
+    await executionRef.set({
+      quizId,
+      startedAt: new Date(),
+      status: 'active' // Peut être "active", "finished", etc.
+    });
+
+    return executionId;
   }
 
-  // Référence à la question dans la sous-collection
-  const questionRef = quizRef.collection('questions').doc(questionId);
-  const questionSnap = await questionRef.get();
-
-  if (!questionSnap.exists) {
-    return false; // Question n'existe pas
-  }
-
-  // Mise à jour de la question
-  await questionRef.update({
-    title: questionData.title,
-    answers: questionData.answers
-  });
-
-  return true;
-}
   
 
 }

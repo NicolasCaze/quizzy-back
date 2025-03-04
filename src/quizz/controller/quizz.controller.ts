@@ -1,5 +1,5 @@
 
-import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException, Put } from '@nestjs/common';
+import { Controller, Post, Body, Req, Get, HttpCode, Request, Res, Param, Patch, NotFoundException, Put, BadRequestException } from '@nestjs/common';
 
 import { QuizzService } from '../service/quizz.service';
 import { RequestWithUser } from '../../auth/model';
@@ -100,5 +100,32 @@ export class QuizzController {
     await this.quizService.updateQuestion(quizId, questionId, userId, body);
 
     res.status(204).send();
+  }
+
+
+  @Post(':id/start')
+  @Auth()
+  @HttpCode(201)
+  async startQuizExecution(
+    @Param('id') quizId: string,
+    @Req() req: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const userId = req.user.uid;
+
+    try {
+      const executionId = await this.quizService.startQuizExecution(quizId, userId);
+      
+      const location = `${req.protocol}://${req.get('host')}/api/execution/${executionId}`;
+      
+
+      res.setHeader('Location', location);
+      res.status(201).send();
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException("Quiz is not ready to be started");
+    }
   }
 }
