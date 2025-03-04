@@ -21,13 +21,64 @@ export class QuizzService {
 
   async getQuizzes(userId: string, baseUrl: string) {
     const quizzes = await this.quizzRepository.getQuizzes(userId);
+
+    const quizzesWithLinks = await Promise.all(quizzes.data.map(async quiz => {
+        const isStartable = await this.isQuizStartable(quiz.id, userId);
+        return {
+            ...quiz,
+            _links: {
+                ...(isStartable ? { start: `${baseUrl}/api/quiz/${quiz.id}/start` } : {})
+            }
+        };
+    }));
+
     return {
-        ...quizzes,
+        data: quizzesWithLinks,
         _links: {
             create: `${baseUrl}/api/quiz`
         }
     };
 }
+
+
+// Fonction pour vérifier si un quiz peut être démarré
+private async isQuizStartable(quizId: string, userId: string): Promise<boolean> {
+  const quiz = await this.quizzRepository.getQuizById(quizId, userId);
+
+  console.log(`Checking quiz startability: ${quizId}`);
+  if (!quiz) {
+      console.log("Quiz not found");
+      return false;
+  }
+  if (!quiz.title) {
+      console.log("Quiz title is empty");
+      return false;
+  }
+  if (!quiz.questions || quiz.questions.length === 0) {
+      console.log("No questions in the quiz");
+      return false;
+  }
+
+  for (const question of quiz.questions) {
+      if (!question.title) {
+          console.log("A question has an empty title");
+          return false;
+      }
+      if (question.answers.length < 2) {
+          console.log("A question has less than 2 answers");
+          return false;
+      }
+      const correctAnswers = question.answers.filter(a => a.isCorrect).length;
+      if (correctAnswers !== 1) {
+          console.log("A question does not have exactly one correct answer");
+          return false;
+      }
+  }
+
+  console.log(`Quiz ${quizId} is startable`);
+  return true;
+}
+
 
   async getQuizById(quizId: string, userId: string): Promise<any> {
     const quiz = await this.quizzRepository.getQuizById(quizId, userId);
