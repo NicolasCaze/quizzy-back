@@ -12,14 +12,19 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api');
+    
     await app.init();
   });
 
   describe('/api/ping', () => {
-    it('should return 200', () => {
-      request(app.getHttpServer())
+    it('should return 200', async () => {
+      const response = await request(app.getHttpServer())
         .get('/api/ping')
         .expect(200)
+
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('Ok');
     })
   })
 });
