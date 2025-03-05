@@ -1,32 +1,149 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../../app.module';
-import { FakeAuthMiddleware } from '../../auth/middleware/fake-auth.middleware.service';
+import { UsersController } from './controller/users.controller';
+import { FirebaseService } from '../firebase.service';
+import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
+import { RequestWithUser } from '../../auth/model';
+import { BadRequestException } from '@nestjs/common';
 
-describe('UserControllers (e2e)', () => {
-  let app: INestApplication;
+describe('Users Integration Test', () => {
+  let controller: UsersController;
+  let firebaseService: FirebaseService;
+  let mockFirebaseAdmin: Partial<FirebaseAdmin>;
+
+  // Mock de la requête avec utilisateur
+  const mockRequest = {
+    user: { uid: 'test-uid' }
+  } as RequestWithUser;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    // Création de mocks pour Firestore et DocumentReference
+    const mockDocRef = {
+      set: jest.fn(),
+      get: jest.fn(),
+    };
+
+    const mockCollection = {
+      doc: jest.fn().mockReturnValue(mockDocRef)
+    };
+
+    mockFirebaseAdmin = {
+      firestore: {
+        collection: jest.fn().mockReturnValue(mockCollection)
+      } as any
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
+      providers: [
+        FirebaseService,
+        {
+          provide: FirebaseConstants.FIREBASE_TOKEN,
+          useValue: mockFirebaseAdmin
+        }
+      ]
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.use(new FakeAuthMiddleware().use);
-    await app.init();
-
-    /*const firebaseService = moduleFixture.get(FirebaseService);
-    await firebaseService.deleteUser(<uid>)*/
+    controller = module.get<UsersController>(UsersController);
+    firebaseService = module.get<FirebaseService>(FirebaseService);
   });
 
-  it('POST /users ()', () => {
-    //const userId = Math.floor(Math.random() * 1000000000);
-    FakeAuthMiddleware.SetUser('test-uid');
-    return request(app.getHttpServer())
-      .post('/users')
-      .send({username: 'tesre'})
-      .expect(201);
+  describe('Création d\'utilisateur (addUser)', () => {
+    it('devrait créer un utilisateur avec un username valide', async () => {
+      // Préparer les données de test
+      const username = 'testuser';
+      
+      // Configurer le mock de Firestore pour un ajout réussi
+      (mockFirebaseAdmin.firestore.collection('users').doc as jest.Mock)
+        .mockReturnValue({
+          set: jest.fn().mockResolvedValue(null)
+        });
+
+      // Appeler la méthode du contrôleur
+      const result = await controller.addUser(mockRequest, { username });
+
+      // Vérifications
+      expect(result).toEqual({ message: 'User created successfully' });
+      
+      // Vérifier que le service Firebase a été appelé correctement
+      expect(mockFirebaseAdmin.firestore.collection).toHaveBeenCalledWith('users');
+      expect(mockFirebaseAdmin.firestore.collection('users').doc).toHaveBeenCalledWith('test-uid');
+    });
+
+    it('devrait lever une exception pour un username vide', async () => {
+      // Tenter de créer un utilisateur avec un username vide
+      await expect(
+        controller.addUser(mockRequest, { username: '' })
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('devrait gérer les erreurs de service lors de la création', async () => {
+      // Simuler une erreur du service Firebase
+      (mockFirebaseAdmin.firestore.collection('users').doc as jest.Mock)
+        .mockReturnValue({
+          set: jest.fn().mockRejectedValue(new Error('Erreur de connexion'))
+        });
+
+      // Tenter de créer un utilisateur
+      await expect(
+        controller.addUser(mockRequest, { username: 'testuser' })
+      ).rejects.toThrow('Erreur lors de l\'ajout de l\'utilisateur : Erreur de connexion');
+    });
   });
 
+  describe('Récupération d\'utilisateur (getUser)', () => {
+    it('devrait récupérer les informations d\'un utilisateur existant', async () => {
+      // Préparer les données de test
+      const userData = { username: 'existinguser' };
+      
+      // Configurer le mock de Firestore pour une récupération réussie
+      (mockFirebaseAdmin.firestore.collection('users').doc as jest.Mock)
+        .mockReturnValue({
+          get: jest.fn().mockResolvedValue({
+            exists: true,
+            data: () => userData
+          })
+        });
+
+      // Appeler la méthode du contrôleur
+      const result = await controller.getUser(mockRequest);
+
+      // Vérifications
+      expect(result).toEqual({ 
+        uid: 'test-uid', 
+        ...userData 
+      });
+      
+      // Vérifier que le service Firebase a été appelé correctement
+      expect(mockFirebaseAdmin.firestore.collection).toHaveBeenCalledWith('users');
+      expect(mockFirebaseAdmin.firestore.collection('users').doc).toHaveBeenCalledWith('test-uid');
+    });
+
+    it('devrait gérer la récupération d\'un utilisateur inexistant', async () => {
+      // Configurer le mock de Firestore pour un utilisateur inexistant
+      (mockFirebaseAdmin.firestore.collection('users').doc as jest.Mock)
+        .mockReturnValue({
+          get: jest.fn().mockResolvedValue({
+            exists: false
+          })
+        });
+
+      // Tenter de récupérer l'utilisateur
+      await expect(
+        controller.getUser(mockRequest)
+      ).rejects.toThrow('Utilisateur non trouvé');
+    });
+
+    it('devrait gérer les erreurs de service lors de la récupération', async () => {
+      // Simuler une erreur du service Firebase
+      (mockFirebaseAdmin.firestore.collection('users').doc as jest.Mock)
+        .mockReturnValue({
+          get: jest.fn().mockRejectedValue(new Error('Erreur de récupération'))
+        });
+
+      // Tenter de récupérer l'utilisateur
+      await expect(
+        controller.getUser(mockRequest)
+      ).rejects.toThrow('Erreur lors de la récupération de l\'utilisateur : Erreur de récupération');
+    });
+  });
 });
