@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PingController } from './ping/controller/ping.controller';
@@ -25,7 +25,7 @@ dotenv.config();
   controllers: [AppController, PingController, UsersController, QuizzController],
   providers: [AppService, PingService, FirebaseService, QuizzService, QuizzRepository],
 })
-export class AppModule {
+export class AppModule implements NestModule{
   public configure(consumer: MiddlewareConsumer) {
       consumer
         .apply(AuthMiddleware)
