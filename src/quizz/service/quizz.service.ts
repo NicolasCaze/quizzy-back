@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { UserService } from '../../users/service/user.service';
-import { QuizzRepository } from '../repository/quizz.repository';
+import { QuizzRepository } from '../../quizz/repository/quizz.repository';
 
 interface Question {
   title: string;
