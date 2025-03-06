@@ -7,7 +7,7 @@ export interface UserData {
 
 
 @Injectable()
-export class FirebaseService {
+export class UserService {
   constructor(@Inject(FirebaseConstants.FIREBASE_TOKEN) private readonly fa: FirebaseAdmin) {}
 
   private getUserRef(uid: string) {
