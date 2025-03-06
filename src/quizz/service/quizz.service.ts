@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { FirebaseService } from '../../firebase/firebase.service';
+import { UserService } from '../../users/service/user.service';
 import { QuizzRepository } from '../repository/quizz.repository';
 
 interface Question {
@@ -20,10 +20,10 @@ export class QuizzService {
   private db;
 
   constructor(
-    private readonly firebaseService: FirebaseService,
+    private readonly userService: UserService,
     private readonly quizzRepository: QuizzRepository,
   ) {
-    this.db = this.firebaseService['db'];
+    this.db = this.userService['db'];
   }
 
   async createQuiz(title: string, description: string, userId: string): Promise<{ id: string; message: string }> {
