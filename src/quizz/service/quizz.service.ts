@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { UserService } from '../../users/service/user.service';
-import { QuizzRepository } from '../repository/quizz.repository';
+
+import { QuizzRepository } from '../../quizz/repository/quizz.repository';
+import QuizData from '../interface/QuizData';
+import QuestionData from '../interface/questionData';
+
+
 
 interface Question {
   title: string;
@@ -58,7 +63,9 @@ export class QuizzService {
     );
   }
 
-  async getQuizById(quizId: string, userId: string): Promise<Omit<Quiz, 'userId'>> {
+
+  async getQuizById(quizId: string, userId: string): Promise<Omit<QuizData, 'userId'>> {
+
     const quiz = await this.quizzRepository.getQuizById(quizId, userId);
     if (!quiz) throw new NotFoundException('Quiz not found');
     if (quiz.userId !== userId) throw new ForbiddenException("You don't have permission to access this quiz");
@@ -72,7 +79,9 @@ export class QuizzService {
     await this.quizzRepository.updateQuizTitle(quizId, newTitle);
   }
 
-  async addQuestionToQuiz(quizId: string, questionData: Question, userId: string): Promise<string> {
+
+  async addQuestionToQuiz(quizId: string, questionData: QuestionData, userId: string): Promise<string> {
+
     await this.getQuizById(quizId, userId);
     return this.quizzRepository.addQuestionToQuiz(quizId, questionData);
   }
@@ -81,7 +90,9 @@ export class QuizzService {
     quizId: string,
     questionId: string,
     userId: string,
-    body: Question,
+
+    body: QuestionData,
+
   ): Promise<boolean> {
     const success = await this.quizzRepository.updateQuestion(quizId, questionId, userId, body);
     if (!success) throw new NotFoundException('Quiz does not exist or does not belong to user');

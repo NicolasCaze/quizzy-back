@@ -32,6 +32,8 @@ describe('AppController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api');
+    
     await app.init();
   });
 
@@ -40,6 +42,7 @@ describe('AppController (e2e)', () => {
   });
 
   describe('/api/ping', () => {
+
     it('should return 200 and status OK when Firestore is available', async () => {
       jest.spyOn(mockFirebaseAdmin.firestore.collection('healthcheck').doc('ping'), 'get')
         .mockResolvedValue({ exists: true } as any);
@@ -69,4 +72,5 @@ describe('AppController (e2e)', () => {
       });
     });
   });
+
 });
