@@ -3,17 +3,6 @@ import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
 import QuizData from '../interface/QuizData';
 import QuestionData from '../interface/questionData';
 
-interface QuizData {
-  title: string;
-  description: string;
-  userId: string;
-}
-
-interface QuestionData {
-  title: string;
-  answers: { title: string; isCorrect: boolean }[];
-}
-
 @Injectable()
 export class QuizzRepository {
   private db;
