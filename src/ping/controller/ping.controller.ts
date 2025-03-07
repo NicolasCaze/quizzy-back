@@ -6,7 +6,7 @@ export class PingController {
     constructor(private readonly pingService : PingService ) {}
     
     @Get()
-    getPing(): {status:String} {
+    getPing(): Promise<{ status: string; details: { database: string; }; }> {
       return this.pingService.getPing();
     }
 }
