@@ -6,20 +6,6 @@ import QuizData from '../interface/QuizData';
 import QuestionData from '../interface/questionData';
 
 
-
-interface Question {
-  title: string;
-  answers: { title: string; isCorrect: boolean }[];
-}
-
-interface Quiz {
-  id: string;
-  title: string;
-  description: string;
-  userId: string;
-  questions?: Question[];
-}
-
 @Injectable()
 export class QuizzService {
   private db;
