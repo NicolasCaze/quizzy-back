@@ -1,13 +1,4 @@
 import { Controller, Post, Body, Request, UseGuards, HttpCode, Param, Get, Req, BadRequestException } from '@nestjs/common';
-<<<<<<< HEAD:src/firebase/users/controller/users.controller.ts
-import { UserService } from '../service/users.service';
-import { Auth } from '../../../auth/middleware/auth.decorator';
-import { RequestWithUser } from '../../../auth/model';
-
-@Controller('users')
-export class UsersController {
-  constructor(private readonly firebaseService: UserService) {}
-=======
 import { UserService } from '../service/user.service';
 import { Auth } from '../../auth/middleware/auth.decorator';
 import { RequestWithUser } from '../../auth/model';
@@ -15,7 +6,7 @@ import { RequestWithUser } from '../../auth/model';
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
->>>>>>> main:src/users/controller/users.controller.ts
+
 
   @Post()
   @Auth()
