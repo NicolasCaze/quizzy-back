@@ -54,7 +54,7 @@ export class QuizzService {
 
     const quiz = await this.quizzRepository.getQuizById(quizId, userId);
     if (!quiz) throw new NotFoundException('Quiz not found');
-    if (quiz.userId !== userId) throw new ForbiddenException("You don't have permission to access this quiz");
+    if (quiz.userId !== userId) throw new NotFoundException("You don't have permission to access this quiz");
     
     const { userId: _, ...quizData } = quiz;
     return quizData;

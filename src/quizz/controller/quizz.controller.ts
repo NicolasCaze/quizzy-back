@@ -42,7 +42,7 @@ export class QuizzController {
     const uid = request.user.uid;
     const quiz= await this.quizService.getQuizById(quizId, uid);
     if (!quiz) {
-      throw new Error('Quiz not found or does not belong to the user');
+      throw new NotFoundException('Quiz not found or does not belong to the user');
     }
     return quiz;
   }

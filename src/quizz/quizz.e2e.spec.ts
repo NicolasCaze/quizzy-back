@@ -254,7 +254,7 @@ describe('QuizzService', () => {
     repository.getQuizById.mockResolvedValue(mockQuiz);
 
     await expect(service.updateQuizTitle('123', 'New Title', 'user123'))
-      .rejects.toThrow(ForbiddenException);
+      .rejects.toThrow(NotFoundException);
   });
 
   it('doit ajouter la question au quizz', async () => {
@@ -296,7 +296,7 @@ describe('QuizzService', () => {
     repository.getQuizById.mockResolvedValue(mockQuiz);
 
     await expect(service.addQuestionToQuiz('123', questionData, 'user123'))
-      .rejects.toThrow(ForbiddenException);
+      .rejects.toThrow(NotFoundException);
   });
 
   it('doit mettre à jour une question dans un quiz', async () => {
