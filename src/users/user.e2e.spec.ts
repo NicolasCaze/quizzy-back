@@ -1,13 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './controller/users.controller';
+<<<<<<< HEAD:src/firebase/users/user.e2e.spec.ts
 import { UserService } from './service/users.service';
+=======
+import { UserService } from './service/user.service';
+>>>>>>> main:src/users/user.e2e.spec.ts
 import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
-import { RequestWithUser } from '../../auth/model';
+import { RequestWithUser } from '../auth/model';
 import { BadRequestException } from '@nestjs/common';
 
 describe('Users Integration Test', () => {
   let controller: UsersController;
+<<<<<<< HEAD:src/firebase/users/user.e2e.spec.ts
   let firebaseService: UserService;
+=======
+  let userService: UserService;
+>>>>>>> main:src/users/user.e2e.spec.ts
   let mockFirebaseAdmin: Partial<FirebaseAdmin>;
 
   // Mock de la requête avec utilisateur
@@ -44,7 +52,11 @@ describe('Users Integration Test', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+<<<<<<< HEAD:src/firebase/users/user.e2e.spec.ts
     firebaseService = module.get<UserService>(UserService);
+=======
+    userService = module.get<UserService>(UserService);
+>>>>>>> main:src/users/user.e2e.spec.ts
   });
 
   describe('Création d\'utilisateur (addUser)', () => {

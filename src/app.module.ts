@@ -3,8 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PingController } from './ping/controller/ping.controller';
 import { PingService } from './ping/service/ping.service';
-import { UsersController } from './firebase/users/controller/users.controller';
-import { FirebaseService } from './firebase/firebase.service';
+import { UsersController } from './users/controller/users.controller';
+import { UserService } from './users/service/user.service';
 import { QuizzController } from './quizz/controller/quizz.controller';
 import { QuizzService } from './quizz/service/quizz.service';
 import { AuthModule } from './auth/auth.module';
@@ -23,7 +23,7 @@ dotenv.config();
     }),
   ],
   controllers: [AppController, PingController, UsersController, QuizzController],
-  providers: [AppService, PingService, FirebaseService, QuizzService, QuizzRepository],
+  providers: [AppService, PingService, UserService, QuizzService, QuizzRepository],
 })
 export class AppModule {
   public configure(consumer: MiddlewareConsumer) {
