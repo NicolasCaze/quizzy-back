@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { UserService } from '../../users/service/user.service';
 
 import { QuizzRepository } from '../../quizz/repository/quizz.repository';
-import QuizData from '../interface/QuizData';
+import QuizData from '../interface/quizData';
 import QuestionData from '../interface/questionData';
 
 
