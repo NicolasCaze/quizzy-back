@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { FirebaseService } from '../../firebase/firebase.service';
+import { UserService } from '../../firebase/users/service/users.service';
 import { QuizzRepository } from '../repository/quizz.repository';
 
 interface Question {
@@ -20,7 +20,7 @@ export class QuizzService {
   private db;
 
   constructor(
-    private readonly firebaseService: FirebaseService,
+    private readonly firebaseService: UserService,
     private readonly quizzRepository: QuizzRepository,
   ) {
     this.db = this.firebaseService['db'];
