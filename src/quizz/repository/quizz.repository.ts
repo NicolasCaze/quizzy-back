@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { FirebaseAdmin, FirebaseConstants } from 'nestjs-firebase';
-import QuizData from '../interface/QuizData';
+import QuizData from '../interface/quizData';
 import QuestionData from '../interface/questionData';
 
 @Injectable()
