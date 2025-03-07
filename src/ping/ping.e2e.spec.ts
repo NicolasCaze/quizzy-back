@@ -41,14 +41,14 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  describe('/api/ping', () => {
+  describe('/ping', () => {
 
     it('should return 200 and status OK when Firestore is available', async () => {
       jest.spyOn(mockFirebaseAdmin.firestore.collection('healthcheck').doc('ping'), 'get')
         .mockResolvedValue({ exists: true } as any);
         
 
-      const response = await request(app.getHttpServer()).get('/ping');
+      const response = await request(app.getHttpServer()).get('/api/ping');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
@@ -61,9 +61,7 @@ describe('AppController (e2e)', () => {
       jest.spyOn(mockFirebaseAdmin.firestore.collection('healthcheck').doc('ping'), 'get')
         .mockRejectedValue(new Error('Firestore unavailable'));
 
-      const response = await request(app.getHttpServer()).get('/ping');
-
-      console.log('Response:', response.body); // DEBUG pour voir ce qui est renvoyé
+      const response = await request(app.getHttpServer()).get('/api/ping');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
